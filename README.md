@@ -55,3 +55,34 @@ git branch -D <local branch>
 To ensure we are not commiting broken code this project makes use of git hooks. Git hooks are scripts triggered during certain events in the git lifecycle. Husky is a popular package which allows us to set up and maintain these scripts. This project makes use a _pre-commit hook_. When we attempt to commit our work, the script defined in the `pre-commit` file will run. If any of our tests fail than the commit will be aborted.
 
 The [Husky documentation](https://typicode.github.io/husky/#/) explains how to configure Husky for your own project as well as creating your own custom hooks.\_
+
+
+## .env 
+
+As .env.* is added to the .gitignore, anyone who wishes to clone your repo will not have access to the necessary environment variables.
+
+To run this project locally, you will need to have two PostgreSQL databases set up; one for development and one for testing. PostgreSQL should be installed (npm install postgres) and setup-dbs command run. dotenv is an npm package that handles the configuration of environment variables. Once installed (npm i dotenv) two .env folders should be created for each database, in this case, one development database and one testing; nc_news and nc_news_test. Each file is populated with 
+PGDATABASE=<database_name_here>. PGDATABASE is an environment variable used in PostgreSQL, which is an open-source relational database management system.
+
+We can then invoke and access whatever this database system is set to with our connection.js 'pool' file. 
+
+The connection (or idex file should have the follwing; 
+
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
+
+const ENV = process.env.NODE_ENV || 'development';
+
+
+dotenv.config({ path: `${__dirname}/../.env.${ENV}` });
+
+const PGDATABASE = process.env.PGDATABASE;
+
+
+if (!process.env.PGDATABASE) {
+  throw new Error('PGDATABASE not set');
+}
+
+module.exports = new Pool();
+
+this can now be required in to files and will direct our files to the correct databases. 
