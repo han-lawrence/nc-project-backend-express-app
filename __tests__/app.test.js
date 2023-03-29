@@ -1,9 +1,11 @@
+
 const request = require('supertest');
 const db = require('../db/connection.js');
 const data = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed.js');
 const app = require('../app.js');
 const { errorMessage } = require('../controllers/error-handling.controller');
+const sorted = require('jest-sorted');
 
 beforeEach(() => seed(data));
 
@@ -84,5 +86,62 @@ describe('2. GET /api/articles/:article_id', () => {
 			});
 	});
 });
+
+describe('GET /api/articles', () => {
+
+  test('200: responds with an array of objects, with each object having correct keys including commet count', () => {
+	return request(app)
+		.get('/api/articles')
+		.expect(200)
+		.then(({ body }) => {
+			const { articles } = body;
+      console.log(body)
+			expect(articles).toBeInstanceOf(Array);
+      expect(articles).toHaveLength(12);
+      expect(articles).toBeSorted({ key:'created_at', descending: true })
+      articles.forEach((article) =>{
+        expect(article).toMatchObject({
+        author:expect.any(String),
+        title:expect.any(String),
+        article_id:expect.any(Number),
+        topic:expect.any(String),
+        created_at:expect.any(String),
+        votes:expect.any(Number),
+        article_img_url:expect.any(String),
+        comment_count: expect.any(Number)
+        })
+      })
+		
+		});
+	});
+
+  test('returns a 404 error when endpoint is not found ', () => {
+		return request(app)
+			.get('/api/invalid-endpoint')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body).toEqual({ msg: 'Incorrect File Path' });
+			});
+	});
+  
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
 
 
