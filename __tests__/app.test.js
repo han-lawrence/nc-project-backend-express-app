@@ -68,21 +68,21 @@ describe('2. GET /api/articles/:article_id', () => {
 				});
 			});
 	});
-	test('returns a 404 error when the article ID is not found', () => {
+	test('returns a 400 error when the article ID is not found', () => {
 		return request(app)
 			.get('/api/articles/999')
-			.expect(404)
+			.expect(400)
 			.then(({ body }) => {
 				expect(body).toEqual({ msg: 'Invalid ID' });
 			});
 	});
 
-  test.skip('returns a 400 error when another data type is used in place of a number', () => {
+  test('returns a 400 error when another data type is used in place of a number', () => {
 		return request(app)
 			.get('/api/articles/imNotAnumber')
 			.expect(400)
 			.then(({ body }) => {
-				expect(body).toEqual({ msg: 'id should be a number' });
+				expect(body).toEqual({ msg: 'Invalid ID' });
 			});
 	});
 });
