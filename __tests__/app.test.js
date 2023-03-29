@@ -8,7 +8,7 @@ const { errorMessage } = require('../controllers/error-handling.controller');
 beforeEach(() => seed(data));
 
 afterAll(() =>{
-  if (db.end) db.end()
+   return db.end()
 })
 
 describe('1. GET /api/topics', () => {
@@ -30,20 +30,16 @@ describe('1. GET /api/topics', () => {
 				});
 			});
 	});
-
-    test('should return a 404 status code and a "Page not found" message if the path is notfound', () => {
-			const req = {};
-			const res = {
-				status: function (code) {
-					expect(code).toEqual(404);
-					return this;
-				},
-				send: function (message) {
-					expect(message).toEqual({ msg: 'Page not found' });
-				},
-			};
-			errorMessage(req, res);
+  	test('returns a 404 error when endpoint is not found ', () => {
+			return request(app)
+				.get('/api/invalid-endpoint')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body).toEqual({ msg: 'Incorrect File Path' });
+				});
 		});
+
+
   
 	});
 
@@ -70,12 +66,21 @@ describe('2. GET /api/articles/:article_id', () => {
 				});
 			});
 	});
-	test('returns a 404 error when the article is not found', () => {
+	test('returns a 404 error when the article ID is not found', () => {
 		return request(app)
 			.get('/api/articles/999')
 			.expect(404)
 			.then(({ body }) => {
 				expect(body).toEqual({ msg: 'Invalid ID' });
+			});
+	});
+
+  test('returns a 400 error when another data type is used in place of a number', () => {
+		return request(app)
+			.get('/api/articles/imNotAnumber')
+			.expect(400)
+			.then(({ body }) => {
+				expect(body).toEqual({ msg: 'Invalid Id' });
 			});
 	});
 });
