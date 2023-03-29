@@ -82,7 +82,7 @@ describe('2. GET /api/articles/:article_id', () => {
 			.get('/api/articles/imNotAnumber')
 			.expect(400)
 			.then(({ body }) => {
-				expect(body).toEqual({ msg: 'Invalid Id' });
+				expect(body).toEqual({ msg: 'id should be a number' });
 			});
 	});
 });
