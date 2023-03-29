@@ -1,6 +1,5 @@
 const db = require('../db/connection');
 
-
 exports.fetchArticle = () => {
 	return db
 		.query(
@@ -11,11 +10,9 @@ exports.fetchArticle = () => {
     ON articles.article_id = comments.article_id
     GROUP BY articles.article_id
     ORDER BY created_at DESC;
-
   `
 		)
 		.then((result) => {
 			return result.rows;
 		});
 };
-

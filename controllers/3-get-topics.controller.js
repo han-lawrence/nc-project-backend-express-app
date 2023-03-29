@@ -1,4 +1,4 @@
-const { fetchTopics } = require('../models/fetch-topics.models');
+const { fetchTopics } = require('../models/3-fetch-topics.models');
 
 function getTopics(req, res, next) {
 	fetchTopics()
