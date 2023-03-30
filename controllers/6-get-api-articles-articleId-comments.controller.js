@@ -2,7 +2,7 @@
 const {
 	getCommentById,
 	doesArticleExists,
-} = require('../models/7-fetch-api-articles-articleId-comments.model');
+} = require('../models/6-fetch-api-articles-articleId-comments.model');
 
 exports.getCommentArr = (req, res, next) => {
 	const { article_id } = req.params;
