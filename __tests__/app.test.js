@@ -224,7 +224,7 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 
 
 test(' returns a 400 if the data to post is missing body.', () => {
-	const item = { username: 'butter_bridge' };
+	const item = { username: 'rogersop' };
 	return request(app)
 		.post('/api/articles/3/comments')
 		.send(item)
@@ -233,7 +233,7 @@ test(' returns a 400 if the data to post is missing body.', () => {
 });
 
 test(' returns a 400 if the article Id is invalid.', () => {
-	const item = { username: 'butter_bridge' };
+	const item = { username: 'rogersop' };
 	return request(app)
 		.post('/api/articles/bannana/comments')
 		.send(item)
@@ -254,7 +254,7 @@ test('returns 400 if the data to post is not in an accurate format.', () => {
 
 test('returns a 404 if no article matches ID.', () => {
 	const item = {
-		username: 'Hannah77',
+		username: 'rogersop',
 		body: 'Replacing the quiet elegance of the dark suit',
 	};
 	return request(app)
