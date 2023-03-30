@@ -190,7 +190,8 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 	test('status 201, responds with a new comment when all the properties are provided', () => {
 		const object = {
 			username: 'butter_bridge',
-			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!", 
+      
 		};
 
 		return request(app)
@@ -201,7 +202,31 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 				const { body } = response;
 				const { comment } = body;
 				expect(comment).toHaveProperty('article_id');
-				console.log(comment);
+				expect(Object.keys(comment).length).toBe(2);
+				expect(comment.comment).toMatchObject({
+					author: expect.any(String),
+					body: expect.any(String),
+					article_id:(1),
+				});
+			});
+	});
+
+
+  test('status 201, respondswith a 201 even though has unnecessary properties on it', () => {
+		const object = {
+			username: 'butter_bridge',
+			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+			blabla1: 'blabla',
+		};
+
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send(object)
+			.expect(201)
+			.then((response) => {
+				const { body } = response;
+				const { comment } = body;
+				expect(comment).toHaveProperty('article_id');
 				expect(Object.keys(comment).length).toBe(2);
 				expect(comment.comment).toMatchObject({
 					author: expect.any(String),
