@@ -247,7 +247,7 @@ describe('PATCH/api/articles/:article_id', () => {
 				});
 			});
 	});
-  test('returns 400 if id is not valid', () => {
+  test('returns 400 if id is not a valid format', () => {
         const item = {inc_votes: 10};
         return request(app)
         .patch('/api/articles/incorretID')
@@ -256,7 +256,7 @@ describe('PATCH/api/articles/:article_id', () => {
         .then(({body}) => {
             const {msg} = body;
             expect(msg).toBe('Invalid ID');
-        });
+        })
 
 });
 
@@ -271,5 +271,42 @@ test ('returns a 400 if inc_votes is missing.', () => {
             expect(msg).toBe('Invalid Format');
         });
 });
+
+test('returns a 404 if no article matches ID.', () => {
+	const item = {
+		username: 'Hannah77',
+		body: 'Replacing the quiet elegance of the dark suit',
+	};
+	return request(app)
+		.post('/api/articles/77777777/comments')
+		.send(item)
+		.expect(404)
+		.then(({ body }) => {
+			const { msg } = body;
+			expect(msg).toBe('ID not found');
+		});
+});
+
+test('returns a 404 found if the username is not found.', () => {
+        const item = {
+					username: 'Hannah77',
+					body: 'Replacing the quiet elegance of the dark suit',
+				};
+        return request(app)
+        .post('/api/articles/3/comments')
+        .send(item)
+        .expect(404)
+        .then(({body}) => expect(body.msg).toBe('Username not found'));
+
+});
+
+    it('400: returns a bad request if the data to post is missing properties.', () => {
+			const item = { username: 'Hannah77' };
+			return request(app)
+				.post('/api/articles/3/comments')
+				.send(item)
+				.expect(400)
+				.then(({ body }) => expect(body.msg).toBe('Invalid format'));
+		});
 
 });
