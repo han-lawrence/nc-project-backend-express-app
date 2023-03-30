@@ -13,7 +13,7 @@ afterAll(() =>{
    return db.end()
 })
 
-describe('1. GET /api/topics', () => {
+describe('3. GET /api/topics', () => {
 	test('status 200, responds with an array of topic objects', () => {
 		return request(app)
 			.get('/api/topics')
@@ -45,7 +45,7 @@ describe('1. GET /api/topics', () => {
   
 	});
 
-describe('2. GET /api/articles/:article_id', () => {
+describe('4. GET /api/articles/:article_id', () => {
 	test('200: responds with an object that has a specific list of properties linked to its parametric id', () => {
 		return request(app)
 			.get('/api/articles/3')
@@ -87,7 +87,7 @@ describe('2. GET /api/articles/:article_id', () => {
 	});
 });
 
-describe('GET /api/articles', () => {
+describe('5.GET /api/articles', () => {
 
   test('200: responds with an array of objects, with each object having correct keys including commet count', () => {
 	return request(app)
@@ -125,6 +125,68 @@ describe('GET /api/articles', () => {
 	});
   
 });
+
+describe('6.GET /api/articles/:article_id/comments', () => {
+  test('200: accepts a article_id query which responds with only comments only from that article_id', () => {
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSorted({ key: 'created_at', descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+						author: expect.any(String),
+						comment_id: expect.any(Number),
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+						body: expect.any(String),
+						article_id: expect.any(Number),
+					});
+        });
+      });
+  });
+  test('200 returns empty array when no comment is found', () => {
+		return request(app)
+			.get('/api/articles/2/comments')
+			.expect(200)
+			.then(({ body }) => {
+       const { comments } = body;
+       expect(comments).toBeInstanceOf(Array);
+				expect(comments).toEqual([]);
+			});
+	});
+
+
+  test('400 returns empty array when no comment is found', () => {
+		return request(app)
+			.get('/api/articles/IamNotANumber/comments')
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Invalid ID");
+			});
+	});
+
+
+  test('404 returns empty array when no comment is found', () => {
+		return request(app)
+			.get('/api/articles/202020/comments')
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe('Article not found');
+			});
+	});
+
+  
+
+
+});
+
+
 
 
 
