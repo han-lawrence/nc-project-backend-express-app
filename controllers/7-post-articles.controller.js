@@ -17,6 +17,6 @@ exports.postComment = (req, res, next) => {
       res.status(201).json(response);
     })
     .catch((err) => {
-      console.error(err);
+      next(err);
     });
 };
