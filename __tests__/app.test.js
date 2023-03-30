@@ -244,6 +244,36 @@ test('returns 400 if the data to post is not in an accurate format.', () => {
 
 });
 
+test('returns a 404 if no article matches ID.', () => {
+	const item = {
+		username: 'Hannah77',
+		body: 'Replacing the quiet elegance of the dark suit',
+	};
+	return request(app)
+		.post('/api/articles/77777777/comments')
+		.send(item)
+		.expect(404)
+		.then(({ body }) => {
+			const { msg } = body;
+			expect(msg).toBe('ID not found');
+		});
+});
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 describe('PATCH/api/articles/:article_id', () => {
@@ -324,4 +354,4 @@ test('returns a 404 if no article matches ID.', () => {
 
 });
 
-});
+
