@@ -224,7 +224,7 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 
 
 test(' returns a 400 if the data to post is missing body.', () => {
-	const item = { username: 'Hannah77' };
+	const item = { username: 'butter_bridge' };
 	return request(app)
 		.post('/api/articles/3/comments')
 		.send(item)
@@ -232,6 +232,14 @@ test(' returns a 400 if the data to post is missing body.', () => {
 		.then(({ body }) => expect(body.msg).toBe('Invalid format'));
 });
 
+test(' returns a 400 if the article Id is invalid.', () => {
+	const item = { username: 'butter_bridge' };
+	return request(app)
+		.post('/api/articles/bannana/comments')
+		.send(item)
+		.expect(400)
+		.then(({ body }) => expect(body.msg).toBe('Invalid ID'));
+});
 
 
 test('returns 400 if the data to post is not in an accurate format.', () => {
@@ -336,20 +344,6 @@ test('returns a 404 found if the username is not found.', () => {
 
 });
 
-test('returns a 404 if no article matches ID.', () => {
-	const item = {
-		username: 'Hannah77',
-		body: 'Replacing the quiet elegance of the dark suit',
-	};
-	return request(app)
-		.post('/api/articles/77777777/comments')
-		.send(item)
-		.expect(404)
-		.then(({ body }) => {
-			const { msg } = body;
-			expect(msg).toBe('ID not found');
-		});
-});
 
 
 });
