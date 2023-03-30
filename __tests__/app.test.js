@@ -222,7 +222,54 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 		});
 
 
+});
 
+});
+
+describe('PATCH/api/articles/:article_id', () => {
+	test('200: updates the votes as required - patch is created.', () => {
+		const item = { inc_votes: 10 };
+		return request(app)
+			.patch('/api/articles/3')
+			.send(item)
+			.expect(200)
+			.then(({ body }) => {
+				const { article } = body;
+				expect(article).toMatchObject({
+					author: expect.any(String),
+					title: expect.any(String),
+					article_id: 3,
+					topic: expect.any(String),
+					created_at: expect.any(String),
+					votes: 10,
+					article_img_url: expect.any(String),
+					body: expect.any(String),
+				});
+			});
+	});
+  test('returns 400 if id is not valid', () => {
+        const item = {inc_votes: 10};
+        return request(app)
+        .patch('/api/articles/incorretID')
+        .send(item)
+        .expect(400)
+        .then(({body}) => {
+            const {msg} = body;
+            expect(msg).toBe('Invalid ID');
+        });
+
+});
+
+test ('returns a 400 if inc_votes is missing.', () => {
+        const item = {};
+        return request(app)
+        .patch('/api/articles/3')
+        .send(item)
+        .expect(400)
+        .then(({body}) => {
+            const {msg} = body;
+            expect(msg).toBe('Invalid Format');
+        });
 });
 
 });
