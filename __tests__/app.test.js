@@ -330,7 +330,7 @@ describe('PATCH/api/articles/:article_id', () => {
 	});
 
 	test('returns a 404 if ID is not found.', () => {
-		const item = { inc_votes: 'invalid data type' };
+		const item = { inc_votes: 3 };
 		return request(app)
 			.post('/api/articles/8989898')
 			.send(item)
