@@ -49,7 +49,6 @@ describe('4. GET /api/articles/:article_id', () => {
 			.then(({ body }) => {
 				const { article } = body;
 				expect(article).toBeInstanceOf(Object);
-				// console.log(article);
 				expect(article).toHaveProperty('article_id');
 				expect(Object.keys(article).length).toBe(8);
 				expect(article).toMatchObject({
@@ -90,7 +89,6 @@ describe('5.GET /api/articles', () => {
 			.expect(200)
 			.then(({ body }) => {
 				const { articles } = body;
-				console.log(body);
 				expect(articles).toBeInstanceOf(Array);
 				expect(articles).toHaveLength(12);
 				expect(articles).toBeSorted({ key: 'created_at', descending: true });
@@ -370,7 +368,7 @@ describe('DELETE /api/comments/:comment_id', () => {
 	});
 });
 
-describe.skip('GET /api/users', () => {
+describe('GET /api/users', () => {
 	it('200: should return an array of all users.', () => {
 		return request(app)
 			.get('/api/users')
@@ -388,6 +386,7 @@ describe.skip('GET /api/users', () => {
 			});
 	});
 });
+
 
 describe.skip('GET /api/articles', () => {
 	test('When no queries are provided, the response code 200 returns an array of articles that includes all rows and the comment count, sorted by date in descending order.', () => {
