@@ -339,7 +339,7 @@ describe('PATCH/api/articles/:article_id', () => {
 	});
 });
 
-describe.skip('DELETE /api/comments/:comment_id', () => {
+describe('DELETE /api/comments/:comment_id', () => {
 	it('deletes comment and returns a 204 No Content that indicates request has succeeded.', () => {
 		return request(app)
 			.delete('/api/comments/3')
