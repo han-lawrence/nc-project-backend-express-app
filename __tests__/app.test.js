@@ -190,7 +190,8 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 	test('status 201, responds with a new comment when all the properties are provided', () => {
 		const object = {
 			username: 'butter_bridge',
-			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!", 
+      
 		};
 
 		return request(app)
@@ -201,7 +202,31 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 				const { body } = response;
 				const { comment } = body;
 				expect(comment).toHaveProperty('article_id');
-				console.log(comment);
+				expect(Object.keys(comment).length).toBe(2);
+				expect(comment.comment).toMatchObject({
+					author: expect.any(String),
+					body: expect.any(String),
+					article_id:(1),
+				});
+			});
+	});
+
+
+  test('status 201, respondswith a 201 even though has unnecessary properties on it', () => {
+		const object = {
+			username: 'butter_bridge',
+			body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+			blabla1: 'blabla',
+		};
+
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send(object)
+			.expect(201)
+			.then((response) => {
+				const { body } = response;
+				const { comment } = body;
+				expect(comment).toHaveProperty('article_id');
 				expect(Object.keys(comment).length).toBe(2);
 				expect(comment.comment).toMatchObject({
 					author: expect.any(String),
@@ -211,7 +236,7 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 			});
 	});
 
-  test('404: username does not exist', () => {
+  test('returns a 404 username does not exist', () => {
  const commentToPost = {username: '', body: 'Game was great' };
   return request(app)
 	.post('/api/reviews/3/comments')
@@ -220,11 +245,69 @@ describe('7. POST /api/articles/:article_id/comments', () => {
 	.then(({ body }) => {
 	expect(body).toEqual({ msg: 'Incorrect File Path' });
 		});
+});
+
+
+test(' returns a 400 if the data to post is missing body.', () => {
+	const item = { username: 'rogersop' };
+	return request(app)
+		.post('/api/articles/3/comments')
+		.send(item)
+		.expect(400)
+		.then(({ body }) => expect(body.msg).toBe('Invalid format'));
+});
+
+test(' returns a 400 if the article Id is invalid.', () => {
+	const item = { username: 'rogersop' };
+	return request(app)
+		.post('/api/articles/bannana/comments')
+		.send(item)
+		.expect(400)
+		.then(({ body }) => expect(body.msg).toBe('Invalid ID'));
+});
+
+
+test('returns 400 if the data to post is not in an accurate format.', () => {
+        const item = {wrongFormat: 'value'};
+        return request(app)
+        .post('/api/articles/3/comments')
+        .send(item)
+        .expect(400)
+        .then(({body}) => expect(body.msg).toBe('Invalid format'));
+
+});
+
+test('returns a 404 if no article matches ID.', () => {
+	const item = {
+		username: 'rogersop',
+		body: 'Replacing the quiet elegance of the dark suit',
+	};
+	return request(app)
+		.post('/api/articles/77777777/comments')
+		.send(item)
+		.expect(404)
+		.then(({ body }) => {
+			const { msg } = body;
+			expect(msg).toBe('ID not found');
+		});
+});
+
 
 
 });
 
-});
+
+
+
+
+
+
+
+
+
+
+
+
 
 describe('PATCH/api/articles/:article_id', () => {
 	test('200: updates the votes as required - patch is created.', () => {
@@ -247,8 +330,8 @@ describe('PATCH/api/articles/:article_id', () => {
 				});
 			});
 	});
-  test('returns 400 if id is not valid', () => {
-        const item = {inc_votes: 10};
+  test('returns 400 if id is not a valid format', () => {
+        const item = {inc_votes: 11};
         return request(app)
         .patch('/api/articles/incorretID')
         .send(item)
@@ -256,7 +339,7 @@ describe('PATCH/api/articles/:article_id', () => {
         .then(({body}) => {
             const {msg} = body;
             expect(msg).toBe('Invalid ID');
-        });
+        })
 
 });
 
@@ -272,4 +355,22 @@ test ('returns a 400 if inc_votes is missing.', () => {
         });
 });
 
+
+test('returns a 404 found if the username is not found.', () => {
+        const item = {
+					username: 'Hannah77',
+					body: 'Replacing the quiet elegance of the dark suit',
+				};
+        return request(app)
+        .post('/api/articles/3/comments')
+        .send(item)
+        .expect(404)
+        .then(({body}) => expect(body.msg).toBe('Username not found'));
+
 });
+
+
+
+});
+
+

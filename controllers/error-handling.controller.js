@@ -4,8 +4,27 @@ exports.errorMessage = (req, res) => {
 };
 
 exports.handlePSQL400s = (err, req, res, next) => {
+	let statusCode;
+	let errorMsg;
+
 	if (err.code === '22P02') {
-		res.status(400).send({ msg: 'Invalid ID' });
+		statusCode = 400;
+		errorMsg = 'Invalid ID';
+	} else if (err.code === '23502') {
+		statusCode = 400;
+		errorMsg = 'Invalid format';
+	} else if (err.code === '23503') {
+		if (err.constraint === 'comments_article_id_fkey') {
+			statusCode = 404;
+			errorMsg = 'ID not found';
+		} else {
+			statusCode = 404;
+			errorMsg = 'Username not found';
+		}
+	}
+
+	if (statusCode) {
+		res.status(statusCode).send({ msg: errorMsg });
 	} else {
 		next(err);
 	}
