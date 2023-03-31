@@ -7,7 +7,6 @@ exports.postComment = (req, res, next) => {
 
   sendObject({ author: username, body, article_id })
     .then((comment) => {
-      console.log(comment)
       const response = {
         comment: {
           comment,

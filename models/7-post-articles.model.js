@@ -8,7 +8,6 @@ exports.sendObject = (body) => {
 			[body.article_id, body.author, body.body]
 		)
 		.then(({ rows }) => {
-      console.log(rows[0])
 			return rows[0];
 		});
 };
