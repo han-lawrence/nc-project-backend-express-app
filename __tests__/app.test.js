@@ -292,25 +292,12 @@ test('returns a 404 if no article matches ID.', () => {
 		});
 });
 
-
-
 });
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 describe('PATCH/api/articles/:article_id', () => {
-	test('200: updates the votes as required - patch is created.', () => {
+	test('200: updates the votes as required and returns the updated article.', () => {
 		const item = { inc_votes: 10 };
 		return request(app)
 			.patch('/api/articles/3')
@@ -356,21 +343,135 @@ test ('returns a 400 if inc_votes is missing.', () => {
 });
 
 
-test('returns a 404 found if the username is not found.', () => {
-        const item = {
-					username: 'Hannah77',
-					body: 'Replacing the quiet elegance of the dark suit',
+test('returns a 400 if votes is not a number.', () => {
+        const item = { inc_votes:  "invalid data type"
 				};
         return request(app)
         .post('/api/articles/3/comments')
         .send(item)
-        .expect(404)
-        .then(({body}) => expect(body.msg).toBe('Username not found'));
+        .expect(400)
+        .then(({body}) => expect(body.msg).toBe('Invalid format'));
 
 });
 
 
+test('returns a 404 if ID is not found.', () => {
+	const item = { inc_votes: 'invalid data type' };
+	return request(app)
+		.post('/api/articles/8989898')
+		.send(item)
+		.expect(404)
+		.then(({ body }) => expect(body.msg).toBe('Incorrect File Path'));
+});
+
 
 });
+
+
+describe('DELETE /api/comments/:comment_id', () => {
+	it('deletes comment and returns a 204 No Content that indicates request has succeeded.', () => {
+		return request(app)
+			.delete('/api/comments/3')
+			.expect(204)
+			.then(({ body }) => expect(body).toEqual({}))
+			.then(() => {
+				return db.query('SELECT * FROM comments WHERE comment_id = 3');
+			})
+			.then(({ rows }) => expect(rows).toEqual([]));
+	});
+	it('returns a 400 code if the format of id is invalid', () => {
+		return request(app)
+			.delete('/api/comments/banana')
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe('Invalid ID');
+			});
+	});
+	it('404: returns a not found if the ID does not exist.', () => {
+		return request(app)
+			.delete('/api/comments/989898')
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe('ID not found');
+			});
+	});
+});
+
+
+
+
+describe('GET /api/users', () => {
+	it('200: should return an array of all users.', () => {
+       return request(app)
+					.get('/api/users')
+					.expect(200)
+					.then(({ body }) => {
+						const { users } = body;
+						expect(users.length).toBe(4);
+						users.forEach((user) => {
+							expect(user).toMatchObject({
+								username: expect.any(String),
+								name: expect.any(String),
+								avatar_url: expect.any(String),
+							});
+						});
+					});
+	});
+});
+
+
+describe('GET /api/articles', () => {
+
+test('When no queries are provided, the response code 200 returns an array of articles that includes all rows and the comment count, sorted by date in descending order.', () => {
+      return request(app)
+        .get('/api/articles')
+        .expect(200);
+    });
+  });
+
+    test('The response code 200 returns an array of articles sorted by date in ascending order."', () => {
+			return request(app)
+				.get('/api/articles?order=asc')
+				.expect(200)
+				.then(({ body }) => {
+					const { articles } = body;
+					expect(articles.length).toBe(12);
+					// Checking order by date
+					expect(articles).toBeSortedBy('created_at', { ascending: true });
+				});
+		});
+
+    test('When a topic is provided, the response code 200 returns an array of articles that are filtered by the provided topic', () => {
+			return request(app)
+				.get('/api/articles?topic=cats')
+				.expect(200)
+				.then(({ body }) => {
+					const { articles } = body;
+					expect(articles.length).toBe(12);
+					articles.forEach((article) => {
+						expect(article).toMatchObject({
+							author: expect.any(String),
+							title: expect.any(String),
+							article_id: expect.any(Number),
+							topic: 'cats',
+							created_at: expect.any(String),
+							votes: expect.any(Number),
+							article_img_url: expect.any(String),
+							comment_count: expect.any(Number), 
+						});
+					});
+				});
+		});
+
+
+
+
+
+
+
+
+
 
 
