@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors');
 const {getTopics} = require('./controllers/3-get-topics.controller');
 const {
 	getArticleById,
@@ -34,6 +35,7 @@ app.get('/api/users', getUsers);
 
 app.all('/*', errorMessage);
 
+app.use(cors());
 app.use(handlePSQL400s);
 app.use(handleCustomErrors);
 app.use(handle500Statuses);
