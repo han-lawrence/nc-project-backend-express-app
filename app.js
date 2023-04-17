@@ -20,6 +20,9 @@ const {
 } = require('./controllers/error-handling.controller');
 
 const app = express();
+
+app.use(cors());
+
 app.use(express.json())
 
 app.get('/api/topics', getTopics);
@@ -35,7 +38,7 @@ app.get('/api/users', getUsers);
 
 app.all('/*', errorMessage);
 
-app.use(cors());
+
 app.use(handlePSQL400s);
 app.use(handleCustomErrors);
 app.use(handle500Statuses);
